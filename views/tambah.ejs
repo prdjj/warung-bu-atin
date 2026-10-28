@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Transaksi - Warung Bu Atin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-md mx-auto bg-white p-6 rounded shadow">
+        <h1 class="text-xl font-bold mb-4 text-gray-800">Catat Transaksi Baru</h1>
+        
+        <form action="/tambah" method="POST" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Tanggal</label>
+                <input type="date" name="tanggal" required class="w-full mt-1 p-2 border rounded border-gray-300">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Keterangan</label>
+                <input type="text" name="keterangan" placeholder="Contoh: Belanja Beras / Kasbon Bu Ani" required class="w-full mt-1 p-2 border rounded border-gray-300">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Jenis Transaksi</label>
+                <select name="jenis" class="w-full mt-1 p-2 border rounded border-gray-300">
+                    <option value="masuk">Pemasukan (Kas Masuk)</option>
+                    <option value="keluar">Pengeluaran (Kas Keluar)</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Jumlah (Rp)</label>
+                <input type="number" name="jumlah" placeholder="50000" required class="w-full mt-1 p-2 border rounded border-gray-300">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Status Pembayaran</label>
+                <select name="status_piutang" class="w-full mt-1 p-2 border rounded border-gray-300">
+                    <option value="lunas">Lunas</option>
+                    <option value="piutang">Piutang / Kasbon</option>
+                </select>
+            </div>
+
+            <div class="flex justify-between items-center pt-2">
+                <a href="/" class="text-gray-600 hover:underline text-sm">Kembali</a>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan Transaksi</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

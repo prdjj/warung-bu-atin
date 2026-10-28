@@ -1,0 +1,84 @@
+const express = require('express');
+const path = require('path');
+const db = require('./config/database');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// Halaman Utama
+app.get('/', async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM transaksi ORDER BY tanggal DESC, id DESC');
+        
+        let totalMasuk = 0;
+        let totalKeluar = 0;
+        let totalPiutang = 0;
+
+        rows.forEach(t => {
+            const nominal = parseFloat(t.jumlah);
+            if (t.jenis === 'masuk' && t.status_piutang === 'lunas') {
+                totalMasuk += nominal;
+            } else if (t.jenis === 'keluar') {
+                totalKeluar += nominal;
+            } else if (t.status_piutang === 'piutang') {
+                totalPiutang += nominal;
+            }
+        });
+
+        const saldoKas = totalMasuk - totalKeluar;
+
+        res.render('index', { 
+            transaksi: rows, 
+            totalMasuk, 
+            totalKeluar, 
+            saldoKas, 
+            totalPiutang 
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Terjadi kesalahan pada server');
+    }
+});
+
+// Halaman Form Tambah Transaksi
+app.get('/tambah', (req, res) => {
+    res.render('tambah');
+});
+
+// Proses Simpan Transaksi
+app.post('/tambah', async (req, res) => {
+    const { tanggal, keterangan, jenis, jumlah, status_piutang } = req.body;
+    try {
+        await db.query(
+            'INSERT INTO transaksi (tanggal, keterangan, jenis, jumlah, status_piutang) VALUES (?, ?, ?, ?, ?)',
+            [tanggal, keterangan, jenis, jumlah, status_piutang]
+        );
+        res.redirect('/');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Gagal menyimpan data transaksi');
+    }
+});
+
+// Proses Hapus Transaksi
+app.post('/hapus/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await db.query('DELETE FROM transaksi WHERE id = ?', [id]);
+        res.redirect('/');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Gagal menghapus data transaksi');
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`Server berjalan di http://localhost:${PORT}`);
+});
